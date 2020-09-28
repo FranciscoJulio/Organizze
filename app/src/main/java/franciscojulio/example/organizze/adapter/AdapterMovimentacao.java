@@ -1,0 +1,85 @@
+package franciscojulio.example.organizze.adapter;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.text.DecimalFormat;
+import java.util.List;
+
+import franciscojulio.example.organizze.R;
+import franciscojulio.example.organizze.model.Movimentacao;
+
+public class AdapterMovimentacao extends RecyclerView.Adapter<AdapterMovimentacao.MyViewHolder> {
+
+    List<Movimentacao> movimentacoes;
+    Context context;
+
+    public AdapterMovimentacao(List<Movimentacao> movimentacoes, Context context) {
+        this.movimentacoes = movimentacoes;
+        this.context = context;
+    }
+
+    @Override
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemLista = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_movimentacao, parent, false);
+        return new MyViewHolder(itemLista);
+    }
+
+
+    @Override
+    public void onBindViewHolder(MyViewHolder holder, int position) {
+        Movimentacao movimentacao = movimentacoes.get(position);
+
+        holder.titulo.setText(movimentacao.getDescricao());
+        String valorString = customValor(movimentacao.getValor(), movimentacao.getTipo());
+        holder.valor.setText( valorString );
+        holder.categoria.setText(movimentacao.getCategoria());
+        holder.valor.setTextColor(context.getResources().getColor(R.color.colorAccentReceita) );
+
+        if ( movimentacao.getTipo().equals("d") ) {
+            holder.valor.setTextColor(context.getResources().getColor(R.color.colorAccent));
+        }
+    }
+
+    private String customValor(double valor, String flag){
+
+        DecimalFormat decimalFormat = new DecimalFormat("0.00");
+        String valorFormatado = decimalFormat.format(valor);
+
+        valorFormatado = valorFormatado.replace(".", ",");
+
+        if( flag.equals("d") ){
+            valorFormatado = "R$ -" + valorFormatado;
+        }else{
+            valorFormatado = "R$ " + valorFormatado;
+        }
+
+        return valorFormatado;
+    }
+
+    @Override
+    public int getItemCount() {
+        return movimentacoes.size();
+    }
+
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+
+        TextView titulo, valor, categoria;
+
+        public MyViewHolder(View itemView) {
+            super(itemView);
+
+            titulo = itemView.findViewById(R.id.textAdapterTitulo);
+            valor = itemView.findViewById(R.id.textAdapterValor);
+            categoria = itemView.findViewById(R.id.textAdapterCategoria);
+        }
+
+    }
+
+}
